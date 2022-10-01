@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+
+            const db = openDatabase('mydb', '1.0', 'test DB', 2 * 1024 * 1024);
+            window.addEventListener('load', () => {
+
+                db.transaction((tx) => {
+                    tx.executeSql('CREATE TABLE IF NOT EXISTS LOGS (id unique, log)');
+                });
+            });
+
+            function submitForm(){
+                const id = document.getElementById('input-id').value;
+                const log = document.getElementById('input-log').value;
+                console.log(id, log);
+                db.transaction((tx) => {
+                    tx.executeSql('INSERT INTO LOGS (id, log) VALUES (?, ?)', [id, log]);
+                });
+            }
+            function readInfo(){
+                db.transaction((tx) => {
+                    tx.executeSql('SELECT * FROM LOGS', [], (tx, results) => {
+                        console.log(results);
+                    });
+                });
+            }
+
+        </script>
+        <input type="text" value="" id="input-id" placeholder="id">
+        <input type="text" value="" id="input-log" placeholder="log">
+        <button onclick="submitForm()">Valider</button>
+        <button onclick="readInfo()">Read</button>
+    </body>
+</html>
