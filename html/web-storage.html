@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <script defer>
+
+            window.addEventListener('load', () => {
+                document.getElementById('text-session').innerText = `You pressed the button ${sessionStorage.getItem('press') ?? 0} since the windows is open`;
+                document.getElementById('text-local').innerText = `You pressed the button ${localStorage.getItem('press') ?? 0} since your first visit`;
+            });
+
+            function press(){
+                console.log('test1');
+                sessionStorage.setItem('press', parseInt(sessionStorage.getItem('press') ?? 0, 10) + 1);
+                document.getElementById('text-session').innerText = `You pressed the button ${sessionStorage.getItem('press')} since the windows is open`;
+
+                localStorage.setItem('press', parseInt(localStorage.getItem('press') ?? 0, 10) + 1);
+                document.getElementById('text-local').innerText = `You pressed the button ${localStorage.getItem('press')} since your first visit`;
+            }
+            function clearData(){
+                localStorage.clear();
+                sessionStorage.clear();
+                document.getElementById('text-session').innerText = `You pressed the button 0 since the windows is open`;
+                document.getElementById('text-local').innerText = `You pressed the button 0 since your first visit`;
+            }
+        </script>
+        <p id="text-session">Your pressed the button 0 times since the windows is open</p>
+        <p id="text-local">Your pressed the button 0 times since your first visit</p>
+        <button onclick="press()">Press</button>
+        <button onclick="clearData()">Reset</button>
+    </body>
+</html>
