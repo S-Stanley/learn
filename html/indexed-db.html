@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+        window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+        window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+
+        if (!window.indexedDB) {
+            console.error("Your browser doesn't support a stable version of IndexedDB.")
+        }
+
+        const request = window.indexedDB.open('db', 2);
+
+        request.onerror = () => {
+            console.error('Cannot open db');
+        };
+
+        let db;
+        request.onsuccess = (event) => {
+            db = request.result;
+            console.log(request.result);
+        };
+
+        const fixtures = [
+            { id: "0001", name: "firstname-00", email: "email-0000@demo.com" },
+            { id: "0001", name: "firstname-01", email: "email-0001@demo.com" }
+         ];
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            const objectStore = db.createObjectStore('demo', {keyPath: "id"});
+            for (const i in fixtures){
+                objectStore.add(fixtures[i]);
+            }
+        }
+
+        function add() {
+            var request = db.transaction(["demo"], "readwrite")
+                .objectStore("demo")
+                .add({ id: "2", name: "firstname-02", email: "email-0002@demo.com" });
+
+            request.onsuccess = function(event) {
+                console.info("User has been added to your database.");
+            };
+
+            request.onerror = function(event) {
+                console.error("Unable to add data\r\User is already exist in your database! ");
+            }
+        }
+
+        function readAll() {
+            console.log(db);
+            const objectStore = db.transaction("demo").objectStore("demo");
+            objectStore.openCursor().onsuccess = function(event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    console.info(`Name for id ${cursor.key} is ${cursor.value.name} with email ${cursor.value.email}`);
+                    cursor.continue();
+                } else {
+                    console.info("No more entries!");
+                }
+            };
+        }
+
+    </script>
+    <div>
+        <button onclick="add()">Add</button>
+        <button onclick="readAll()">Read</button>
+    </div>
+</body>
+</html>
